@@ -78,14 +78,16 @@ window.downloadGeoJSON = function(tableName) {
     a.click();
   });
 }
-
+function doSomethingWithDao(){
+	
+}
 window.loadGeoPackage = function(files) {
   var f = files[0];
   fileName = f.name;
   $('#choose-label').find('i').toggle();
   $('#choose-label').find('span').text(f.name);
   $('#status').removeClass('gone');
-
+	
   var r = new FileReader();
   r.onload = function() {
     var array = new Uint8Array(r.result);
@@ -248,8 +250,13 @@ window.loadGeoPackage = function(files) {
         });
       });
     }
+	
+	console.log("Here's Something");
+	doSomethingWithDao();
   }
   r.readAsArrayBuffer(f);
+
+  
 }
 
 function clearInfo() {
@@ -275,6 +282,11 @@ function loadByteArray(array, callback) {
     geoPackage = gp;
     readGeoPackage(callback);
   });
+  //console.log(geoPackage);
+}
+
+function removeTile(id, tableName){
+	console.log("Removing entry " + id + " from table " + tableName);
 }
 
 function readGeoPackage(callback) {
@@ -287,7 +299,7 @@ function readGeoPackage(callback) {
 
   var tileTableNode = $('#tile-tables');
   var featureTableNode = $('#feature-tables');
-
+	
   async.parallel([
     function(callback) {
       geoPackage.getTileTables(function(err, tables) {
@@ -312,6 +324,8 @@ function readGeoPackage(callback) {
             geoPackage.getInfoForTable(featureDao, function(err, info) {
               tableInfos[table] = info;
               var rendered = Mustache.render(featureTableTemplate, info);
+			  /*console.log(info);
+			  console.log(rendered);*/
               featureTableNode.append(rendered);
               callback();
             });
@@ -405,6 +419,7 @@ window.toggleLayer = function(layerType, table) {
       geojsonLayer.bringToFront();
       tableLayers[table] = geojsonLayer;
     });
+	//console.log(geojsonLayer);
   }
 }
 
@@ -608,6 +623,7 @@ window.loadFeatures = function(tableName, featuresElement) {
   };
   GeoPackageAPI.iterateGeoJSONFeaturesFromTable(geoPackage, tableName, function(err, feature, featureDone) {
     feature.tableName = tableName;
+	//console.log(tableName);
     feature.values = [];
     for (var i = 0; i < features.columns.length; i++) {
       var value = feature.properties[features.columns[i].name];
